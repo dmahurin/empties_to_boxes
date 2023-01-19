@@ -45,6 +45,12 @@ def find_ancestor_node(e, pool):
 		e = e.parent
 	return e
 
+def empties_to_boxes(objects):
+    empties = set([i for i in objects if i.type == "EMPTY"])
+    empties = list(set([find_ancestor_node(i, empties) for i in empties]))
+    for e in empties:
+        collection_replace_empty(e.users_collection[0], e)
+
 class EBOX_OT_create_boxes(bpy.types.Operator):
     """Convert the selected empties to boxes"""
     bl_idname = "ec.create_boxes"
@@ -52,10 +58,7 @@ class EBOX_OT_create_boxes(bpy.types.Operator):
     bl_options = {'UNDO'}
 
     def execute(self, context):
-        empties = set([i for i in bpy.context.selected_objects if i.type == "EMPTY"])
-        empties = list(set([find_ancestor_node(i, empties) for i in empties]))
-        for e in empties:
-            collection_replace_empty(e.users_collection[0], e)
+        empties_to_boxes(bpy.context.selected_objects)
 
         return {'FINISHED'}
 
